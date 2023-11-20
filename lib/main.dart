@@ -148,8 +148,7 @@ class HomeScreen extends StatelessWidget {
                                 'Request failed with status: ${response.statusCode}.');
                           }
                           var headers = {
-                            'Authorization':
-                                'bearer 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',
+                            'Authorization': 'bearer $accessToken',
                             'Content-Type': 'application/json'
                           };
                           var request = http.Request('POST',
