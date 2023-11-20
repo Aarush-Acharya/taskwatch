@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter/foundation.dart';
+import 'package:taskwatch/result_screen.dart';
 import 'package:window_location_href/window_location_href.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,6 +128,186 @@ class HomeScreen extends StatelessWidget {
                           String accessToken = session.providerAccessToken;
                           print(accessToken);
 
+                          var url = Uri.parse('https://api.github.com/user');
+                          var response = await http.get(
+                            url,
+                            headers: {
+                              'Accept': 'application/vnd.github+json',
+                              'Authorization': 'Bearer $accessToken',
+                              'X-GitHub-Api-Version': '2022-11-28',
+                            },
+                          );
+                          var jsonResponse;
+                          if (response.statusCode == 200) {
+                            jsonResponse = jsonDecode(response.body);
+                            print(jsonResponse['name']);
+                            // Handle the jsonResponse here
+                            print(jsonResponse);
+                          } else {
+                            print(
+                                'Request failed with status: ${response.statusCode}.');
+                          }
+                          var headers = {
+                            'Authorization':
+                                'bearer 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',
+                            'Content-Type': 'application/json'
+                          };
+                          var request = http.Request('POST',
+                              Uri.parse('https://api.github.com/graphql'));
+                          request.body = json.encode({
+                            "query":
+                                'query { user(login: \"${jsonResponse['login']}\") { name contributionsCollection { contributionCalendar { colors totalContributions weeks { contributionDays { color contributionCount date weekday } firstDay } } } } }'
+                          });
+                          request.headers.addAll(headers);
+
+                          http.StreamedResponse response_body =
+                              await request.send();
+                          var data;
+                          if (response.statusCode == 200) {
+                            data = jsonDecode(
+                                await response_body.stream.bytesToString());
+                            data = data['data'];
+                            data = data['user'];
+                            print(data);
+                          } else {
+                            print(response_body.reasonPhrase);
+                          }
+                          var Headers = {'Content-Type': 'application/json'};
+                          var request_plot = http.Request(
+                              'POST', Uri.parse('http://0.0.0.0:80/predict'));
+                          request_plot.body = json.encode({
+                            "name": "Aarush Acharya",
+                            "contributionsCollection": {
+                              "contributionCalendar": {
+                                "colors": [
+                                  "#9be9a8",
+                                  "#40c463",
+                                  "#30a14e",
+                                  "#216e39"
+                                ],
+                                "totalContributions": 508,
+                                "weeks": [
+                                  {
+                                    "contributionDays": [
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-11-20",
+                                        "weekday": 0
+                                      },
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-11-21",
+                                        "weekday": 1
+                                      },
+                                      {
+                                        "color": "#9be9a8",
+                                        "contributionCount": 3,
+                                        "date": "2022-11-22",
+                                        "weekday": 2
+                                      },
+                                      {
+                                        "color": "#9be9a8",
+                                        "contributionCount": 2,
+                                        "date": "2022-11-23",
+                                        "weekday": 3
+                                      },
+                                      {
+                                        "color": "#9be9a8",
+                                        "contributionCount": 3,
+                                        "date": "2022-11-24",
+                                        "weekday": 4
+                                      },
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-11-25",
+                                        "weekday": 5
+                                      },
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-11-26",
+                                        "weekday": 6
+                                      }
+                                    ],
+                                    "firstDay": "2022-11-20"
+                                  },
+                                  {
+                                    "contributionDays": [
+                                      {
+                                        "color": "#9be9a8",
+                                        "contributionCount": 1,
+                                        "date": "2022-11-27",
+                                        "weekday": 0
+                                      },
+                                      {
+                                        "color": "#9be9a8",
+                                        "contributionCount": 1,
+                                        "date": "2022-11-28",
+                                        "weekday": 1
+                                      },
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-11-29",
+                                        "weekday": 2
+                                      },
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-11-30",
+                                        "weekday": 3
+                                      },
+                                      {
+                                        "color": "#40c463",
+                                        "contributionCount": 6,
+                                        "date": "2022-12-01",
+                                        "weekday": 4
+                                      },
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-12-02",
+                                        "weekday": 5
+                                      },
+                                      {
+                                        "color": "#ebedf0",
+                                        "contributionCount": 0,
+                                        "date": "2022-12-03",
+                                        "weekday": 6
+                                      }
+                                    ],
+                                    "firstDay": "2022-11-27"
+                                  }
+                                ]
+                              }
+                            }
+                          });
+                          request_plot.headers.addAll(Headers);
+                          http.StreamedResponse response_plot =
+                              await request_plot.send();
+                          Uint8List imageBytes;
+                          if (response_plot.statusCode == 200) {
+                            List<int> bytes =
+                                await response_plot.stream.toBytes();
+                            // Convert bytes to image
+                            if (bytes.isNotEmpty) {
+                              imageBytes = Uint8List.fromList(bytes);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ResultScreen(imageBytes: imageBytes)),
+                              );
+                              // Display the image using Image.memory or use it in your UI
+                            } else {
+                              print('Empty response body');
+                            }
+                          } else {
+                            print(response_plot.reasonPhrase);
+                          }
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
