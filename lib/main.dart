@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                 height: 20,
               ),
               Text(
-                'Analyse, Predict Productivity, \n and Scale.',
+                'Analyse, Predict Productivity, \n and Scale Yourself.',
                 style: TextStyle(color: Colors.white, fontSize: 58),
               ),
               SizedBox(
