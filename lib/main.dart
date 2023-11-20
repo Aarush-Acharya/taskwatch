@@ -1,26 +1,32 @@
+import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
+import 'package:flutter/foundation.dart';
+import 'package:window_location_href/window_location_href.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomeScreen(),
-    );
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  Client client = Client();
+  client = Client()
+      .setEndpoint("https://cloud.appwrite.io/v1")
+      .setProject("655b10516fd64a4e4c69");
+  ;
+  Account account = Account(client);
+  runApp(MaterialApp(
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      useMaterial3: true,
+    ),
+    home: HomeScreen(
+      account: account,
+    ),
+  ));
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  Account account;
+  final Uri? location = href == null ? null : Uri.parse(href!);
+  HomeScreen({super.key, required this.account});
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +111,20 @@ class HomeScreen extends StatelessWidget {
                             backgroundColor: const Color(0xffFFFFE0),
                             maximumSize: Size(250, 50),
                             minimumSize: Size(250, 50)),
-                        onPressed: () {},
+                        onPressed: () async {
+                          await account.createOAuth2Session(
+                            provider: 'github',
+                            scopes: ["public_repo"],
+                            success:
+                                kIsWeb ? '${location?.origin}/auth.html' : null,
+                          );
+                          Session session = await account.getSession(
+                            sessionId: 'current',
+                          );
+                          String accessToken = session.providerAccessToken;
+                          print(accessToken);
+
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
