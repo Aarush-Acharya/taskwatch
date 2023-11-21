@@ -173,7 +173,7 @@ class HomeScreen extends StatelessWidget {
                           }
                           var Headers = {'Content-Type': 'application/json'};
                           var request_plot = http.Request(
-                              'POST', Uri.parse('http://0.0.0.0:80/predict'));
+                              'POST', Uri.parse('https://8d5d-115-241-34-98.ngrok-free.app/predict'));
                           request_plot.body = json.encode({
                             "name": "Aarush Acharya",
                             "contributionsCollection": {
