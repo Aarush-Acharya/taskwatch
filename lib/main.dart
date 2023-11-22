@@ -118,7 +118,7 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () async {
                           await account.createOAuth2Session(
                             provider: 'github',
-                            scopes: ["public_repo"],
+                            scopes: ["public_repo", "account"],
                             success:
                                 kIsWeb ? '${location?.origin}/auth.html' : null,
                           );
@@ -173,7 +173,9 @@ class HomeScreen extends StatelessWidget {
                           }
                           var Headers = {'Content-Type': 'application/json'};
                           var request_plot = http.Request(
-                              'POST', Uri.parse('https://8d5d-115-241-34-98.ngrok-free.app/predict'));
+                              'POST',
+                              Uri.parse(
+                                  'https://8d5d-115-241-34-98.ngrok-free.app/predict'));
                           request_plot.body = json.encode(data);
                           request_plot.headers.addAll(Headers);
                           http.StreamedResponse response_plot =
